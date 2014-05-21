@@ -32,7 +32,20 @@ class ProductController extends \BaseController {
 	 */
 	public function store()
 	{
-		//
+     $input = Input::all();
+     $v = Validator::make($input, Product::$rules);
+     if ($v->passes())
+     {
+       $product = new Product;
+       $product->name = $input['name'];
+       $product->price = $input['price'];
+       $product->save();
+       return Redirect::action('ProductController@show',array($product->id));
+     }
+     else
+     {
+       return Redirect::action('ProductController@create')->withErrors($v);
+     }
 	}
 
 
@@ -71,11 +84,19 @@ class ProductController extends \BaseController {
 	public function update($id)
 	{
 		$product = Product::find($id);
- $input = Input::all();
- $product->name = $input['name'];
- $product->price = $input['price'];
- $product->save();
- return Redirect::route('product.show', $product->id);
+    $input = Input::all();
+    $v = Validator::make($input, Product::$rules);
+    if($v->passes())
+    {
+      $product->name = $input['name'];
+      $product->price = $input['price'];
+      $product->save();
+      return Redirect::route('product.show', $product->id);
+    }
+    else
+    {
+      return Redirect::action('ProductController@edit')->withErrors($v);  
+    }
 	}
 
 
